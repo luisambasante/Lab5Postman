@@ -1,116 +1,150 @@
-# Usuarios y Productos GraphQL
+# Backend: API GraphQL de Usuarios y Productos
 
-Servicio de datos GraphQL que permite crear, consultar, actualizar y
-eliminar usuarios y productos en una base de datos MySQL. Ideal para
-aprender GraphQL, esquemas tipados, resolutores y pruebas funcionales.
+API construida con **Node.js + Express** y **GraphQL** que permite crear, consultar, actualizar y eliminar usuarios y productos, con persistencia en **MySQL**.
 
-**Área:** Desarrollo de software y arquitectura de microservicios
+## Funcionalidades
 
-**Competencia:** Construir servicios de datos con GraphQL aplicando
-esquemas tipados, resolutores, persistencia en MySQL y pruebas
-funcionales, de acuerdo con requisitos de calidad y seguridad.
+- CRUD completo de **usuarios** y **productos**.
+- Esquema GraphQL tipado (`buildSchema`) con queries y mutations.
+- Consultas SQL parametrizadas (`?`) para evitar inyección SQL.
+- Interfaz GraphiQL para probar consultas desde el navegador.
+- Colección de Postman con pruebas positivas y negativas.
 
-## Estructura del proyecto
+## Tecnologías
 
-```
-usuarios-graphql/
-├── src/
-│   ├── config/
-│   │   └── db.js                  # Pool de conexión a MySQL (mysql2/promise)
-│   ├── graphql/
-│   │   ├── schema.js              # Tipos, queries y mutaciones (SDL, buildSchema)
-│   │   └── resolvers.js           # Resolutores de Usuario y Producto
-│   └── index.js                   # Servidor Express que expone /graphql
-├── postman/
-│   └── usuarios-productos.postman_collection.json   # Colección de Postman
-├── database.sql                   # Script de creación de la BD (users, products) y datos de ejemplo
-├── package.json
-├── .env.example                   # Plantilla de variables de entorno
-└── .env                           # Variables de entorno reales (NO se sube al repo)
-```
-
-### Código fuente
-
-- **`src/config/db.js`**: crea un *pool* de conexiones MySQL a partir
-  de las variables de entorno (`DB_HOST`, `DB_PORT`, `DB_USER`,
-  `DB_PASSWORD`, `DB_NAME`). Es el único punto donde se configura la
-  conexión a la base de datos.
-- **`src/graphql/schema.js`**: define el esquema GraphQL con
-  `buildSchema` — tipos `User` y `Product`, queries
-  `users`/`user`/`products`/`product`, mutaciones
-  `createUser`/`updateUser`/`deleteUser` y
-  `createProduct`/`updateProduct`/`deleteProduct`.
-- **`src/graphql/resolvers.js`**: implementa los resolutores para cada
-  query/mutation del esquema. Todas las consultas SQL usan parámetros
-  (`?`) en vez de concatenar strings, para evitar inyección SQL.
-- **`src/index.js`**: levanta un servidor Express, habilita CORS y
-  expone el esquema en la ruta `/graphql` usando `graphql-http`.
+| Herramienta | Uso |
+|---|---|
+| Node.js + Express | Servidor HTTP |
+| `graphql` + `graphql-http` | Esquema y manejo de peticiones GraphQL |
+| `mysql2` | Conexión a MySQL (pool de conexiones) |
+| `dotenv` | Variables de entorno |
+| `cors` | Permite peticiones desde el frontend |
+| `nodemon` | Recarga automática en desarrollo |
+| MySQL 5.7+ / 8.x | Base de datos (administrada con MySQL Workbench) |
 
 ## Requisitos previos
 
 - [Node.js](https://nodejs.org/) 18 o superior
-- [MySQL](https://www.mysql.com/) 5.7+ / 8.x (o XAMPP/WAMP con MySQL)
+- [MySQL](https://www.mysql.com/) 5.7+ / 8.x y MySQL Workbench (o XAMPP/WAMP con MySQL)
+- [Postman](https://www.postman.com/) (opcional, para probar la API)
 
 ## Instalación
 
-1. Clonar el repositorio y entrar a la carpeta del laboratorio:
+### 1. Clonar el repositorio
 
-   ```bash
-   git clone <url-del-repositorio>
-   cd Lab4Postman
-   ```
+```bash
+git clone <url-del-repositorio>
+cd Lab4Postman
+```
 
-2. Instalar las dependencias:
+### 2. Instalar dependencias
 
-   ```bash
-   npm install
-   ```
+```bash
+npm install
+```
 
-3. Crear el archivo `.env` a partir de la plantilla y completar tus
-   propias credenciales de MySQL (este archivo **no** se sube al
-   repositorio):
+### 3. Crear la base de datos
 
-   ```bash
-   cp .env.example .env
-   ```
+Abre MySQL Workbench, conéctate a tu servidor y ejecuta el contenido de `database.sql`. También puedes hacerlo desde la terminal:
 
-   ```env
-   PORT=4000
-   DB_HOST=localhost
-   DB_PORT=3306
-   DB_USER=usuario_mysql
-   DB_PASSWORD=clave_mysql
-   DB_NAME=graphql_db
-   ```
+```bash
+mysql -u root -p < database.sql
+```
 
-4. Crear la base de datos y las tablas `users` y `products`
-   ejecutando `database.sql` en tu servidor MySQL, por ejemplo:
+Esto crea la base `graphql_db` con las tablas `users` y `products` y datos de ejemplo.
 
-   ```bash
-   mysql -u root -p < database.sql
-   ```
+### 4. Configurar las variables de entorno
 
-   o pegando su contenido en MySQL Workbench / phpMyAdmin.
+```bash
+cp .env.example .env
+```
+
+Edita `.env` con los datos de tu conexión de MySQL Workbench:
+
+```env
+PORT=4000
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=tu_contraseña
+DB_NAME=graphql_db
+```
+
+| Variable | Descripción |
+|---|---|
+| `PORT` | Puerto del servidor (por defecto `4000`) |
+| `DB_HOST` | Servidor de MySQL |
+| `DB_PORT` | Puerto de MySQL (normalmente `3306`) |
+| `DB_USER` | Usuario de MySQL |
+| `DB_PASSWORD` | Contraseña de MySQL |
+| `DB_NAME` | Nombre de la base de datos (`graphql_db`) |
+
+> `.env` contiene credenciales y **no debe subirse** al repositorio (ya está en `.gitignore`).
 
 ## Ejecución
 
-- Modo desarrollo (con recarga automática vía `nodemon`):
+```bash
+npm run dev      # desarrollo, con recarga automática (nodemon)
+npm start        # producción
+```
 
-  ```bash
-  npm run dev
-  ```
-
-- Modo producción:
-
-  ```bash
-  npm start
-  ```
-
-Al arrancar correctamente verás en consola:
+Al arrancar correctamente verás:
 
 ```
 Servidor GraphQL escuchando en http://localhost:4000/graphql
 ```
+
+## Puertos y rutas
+
+| Servicio | Puerto | URL |
+|---|---|---|
+| API GraphQL | `4000` | http://localhost:4000/graphql |
+| Interfaz GraphiQL | `4000` | http://localhost:4000/graphiql |
+| MySQL | `3306` | `localhost:3306` |
+
+- **`/graphql`** recibe las consultas. Si lo abres en el navegador verás `Missing query`: es normal, el navegador hace un `GET` sin consulta.
+- **`/graphiql`** es la interfaz para escribir y ejecutar consultas (requiere conexión a internet, porque carga sus archivos desde un CDN).
+- El frontend en Vite corre en el puerto `5173`.
+
+## Estructura
+
+```
+Lab4Postman/
+├── src/
+│   ├── config/
+│   │   └── db.js               # Pool de conexión a MySQL
+│   ├── graphql/
+│   │   ├── schema.js           # Tipos, queries y mutations
+│   │   └── resolvers.js        # Resolutores de usuarios y productos
+│   └── index.js                # Servidor Express (/graphql y /graphiql)
+├── postman/
+│   └── usuarios-productos.postman_collection.json
+├── database.sql                # Creación de la BD, tablas y datos de ejemplo
+├── .env.example                # Plantilla de variables de entorno
+└── package.json
+```
+
+## Base de datos
+
+**`users`**
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | INT UNSIGNED | Clave primaria, autoincremental |
+| `name` | VARCHAR(100) | Obligatorio |
+| `email` | VARCHAR(150) | Obligatorio y **único** |
+| `created_at` | TIMESTAMP | Fecha de creación |
+
+**`products`**
+
+| Campo | Tipo | Notas |
+|---|---|---|
+| `id` | INT UNSIGNED | Clave primaria, autoincremental |
+| `name` | VARCHAR(150) | Obligatorio |
+| `description` | VARCHAR(500) | Opcional |
+| `price` | DECIMAL(10,2) | Obligatorio |
+| `stock` | INT UNSIGNED | Por defecto `0` |
+| `created_at` | TIMESTAMP | Fecha de creación |
 
 ## Esquema GraphQL
 
@@ -155,24 +189,7 @@ type Mutation {
 
 ```graphql
 query {
-  users {
-    id
-    name
-    email
-    created_at
-  }
-}
-```
-
-**Obtener un usuario por ID**
-
-```graphql
-query {
-  user(id: 1) {
-    id
-    name
-    email
-  }
+  users { id name email created_at }
 }
 ```
 
@@ -180,11 +197,7 @@ query {
 
 ```graphql
 mutation {
-  createUser(name: "Ana Torres", email: "ana@example.com") {
-    id
-    name
-    email
-  }
+  createUser(name: "Ana Torres", email: "ana@example.com") { id name email }
 }
 ```
 
@@ -192,15 +205,11 @@ mutation {
 
 ```graphql
 mutation {
-  updateUser(id: 1, name: "Ana Actualizada") {
-    id
-    name
-    email
-  }
+  updateUser(id: 1, name: "Ana Actualizada") { id name email }
 }
 ```
 
-**Eliminar un usuario**
+**Eliminar un usuario** (devuelve `true` o `false`)
 
 ```graphql
 mutation {
@@ -208,109 +217,48 @@ mutation {
 }
 ```
 
-**Listar productos**
-
-```graphql
-query {
-  products {
-    id
-    name
-    description
-    price
-    stock
-    created_at
-  }
-}
-```
-
-**Obtener un producto por ID**
-
-```graphql
-query {
-  product(id: 1) {
-    id
-    name
-    price
-    stock
-  }
-}
-```
-
 **Crear un producto**
 
 ```graphql
 mutation {
-  createProduct(name: "Monitor 24''", description: "Monitor Full HD 24 pulgadas", price: 199.5, stock: 10) {
-    id
-    name
-    price
-    stock
+  createProduct(name: "Monitor 24''", description: "Full HD", price: 199.5, stock: 10) {
+    id name price stock
   }
-}
-```
-
-**Actualizar un producto**
-
-```graphql
-mutation {
-  updateProduct(id: 1, price: 149.99, stock: 15) {
-    id
-    name
-    price
-    stock
-  }
-}
-```
-
-**Eliminar un producto**
-
-```graphql
-mutation {
-  deleteProduct(id: 1)
 }
 ```
 
 ## Pruebas con Postman
 
-El repositorio incluye
-[`postman/usuarios-productos.postman_collection.json`](./postman/usuarios-productos.postman_collection.json)
-con dos carpetas — **Usuarios** y **Productos** —, cada una con sus 5
-operaciones CRUD y 2 pruebas negativas.
+1. En Postman: **Import** → `postman/usuarios-productos.postman_collection.json`.
+2. Verifica que la variable `base_url` sea `http://localhost:4000`.
+3. Con el servidor corriendo, ejecuta las peticiones. Todas son `POST` a `{{base_url}}/graphql` con cuerpo JSON:
 
-1. Abrir Postman y usar **Import** → seleccionar
-   `postman/usuarios-productos.postman_collection.json`.
-2. La colección define la variable `base_url` (por defecto
-   `http://localhost:4000`); ajústala si tu servidor corre en otro
-   puerto.
-3. Con el servidor corriendo (`npm run dev`), ejecutar en orden las
-   peticiones de cada carpeta. Todas se envían como `POST` a
-   `{{base_url}}/graphql` con el cuerpo en formato JSON
-   (`{ "query": "...", "variables": { ... } }`).
+```json
+{ "query": "{ users { id name email } }" }
+```
 
-### Pruebas negativas
+### Pruebas negativas incluidas
 
-La colección incluye cuatro casos de error esperados:
-
-- **`[Negativa] Crear usuario con email duplicado`**: intenta crear un
-  usuario con un email que ya existe (`ana@example.com`). Debe fallar
-  por la restricción `UNIQUE` de la columna `email` en MySQL, sin
-  llegar a insertar el registro.
-- **`[Negativa] Actualizar usuario inexistente`**: intenta actualizar
-  un `id` que no existe (`999999`). Debe responder `data.updateUser: null`
-  en vez de un error de servidor.
-- **`[Negativa] Crear producto con precio inválido`**: envía un string
-  en el argumento `price` (que es `Float!`). Debe fallar con un error
-  de validación de GraphQL, sin crear el producto.
-- **`[Negativa] Eliminar producto inexistente`**: intenta eliminar un
-  `id` que no existe (`999999`). Debe responder `data.deleteProduct: false`
-  en vez de un error de servidor.
+| Prueba | Resultado esperado |
+|---|---|
+| Crear usuario con email duplicado | Error por la restricción `UNIQUE` |
+| Actualizar usuario inexistente | `data.updateUser: null` |
+| Crear producto con precio inválido | Error de validación de GraphQL |
+| Eliminar producto inexistente | `data.deleteProduct: false` |
 
 ## Seguridad
 
-- Las credenciales reales de la base de datos viven únicamente en
-  `.env`, el cual está excluido del control de versiones mediante
-  `.gitignore`. Usa `.env.example` como referencia de las variables
-  requeridas.
-- Todas las consultas a la base de datos usan sentencias
-  parametrizadas (`mysql2` con `?`), nunca concatenación de strings,
-  para prevenir inyección SQL.
+- Las credenciales viven solo en `.env`, excluido del control de versiones.
+- Todas las consultas SQL usan parámetros (`mysql2` con `?`), sin concatenar strings.
+
+## Solución de problemas
+
+| Síntoma | Causa probable |
+|---|---|
+| `Missing query` en el navegador | Es normal en `/graphql`. Usa `/graphiql` o Postman |
+| `Access denied for user` | `DB_USER` o `DB_PASSWORD` incorrectos en `.env` |
+| `Unknown database 'graphql_db'` | No ejecutaste `database.sql` |
+| `ECONNREFUSED` | MySQL está apagado, o `DB_HOST` / `DB_PORT` no coinciden |
+| `EADDRINUSE` | El puerto 4000 ya está en uso; cambia `PORT` en `.env` |
+| `Duplicate entry ... for key 'email'` | Ya existe un usuario con ese correo |
+| Cambios en `.env` que no se aplican | Reinicia el servidor |
