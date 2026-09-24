@@ -196,8 +196,8 @@ query {
 
 | Nombre | Rol |
 |---|---|
-| _Nombre del autor 1_ | _Backend / Base de datos_ |
-| _Nombre del autor 2_ | _Frontend_ |
+| _Isabella Escobar Valencia_ | _Backend / Base de datos_ |
+| _Luisa María Basante Córdoba_ | _Frontend_ |
 
 ## Licencia
 
